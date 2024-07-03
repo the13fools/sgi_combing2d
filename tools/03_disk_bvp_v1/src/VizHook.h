@@ -144,7 +144,7 @@ public:
 
           T dirichlet_term = (a + b + c - 3*curr).squaredNorm();
 
-          return w_smooth*dirichlet_term + w_s_perp * s_perp_term;
+          return w_smooth*dirichlet_term;
       });
 
       // Assemble inital x vector from P matrix.

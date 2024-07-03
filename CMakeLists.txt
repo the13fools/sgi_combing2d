@@ -207,12 +207,6 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 # include_directories(${NASOQ_INC} ${NASOQ_EIGEN_INC})
 # link_directories(${NASOQ_LIB})
 
-# suite-sparse
-message("build with suite-sparse")
-find_package(SuiteSparse REQUIRED)
-include_directories(${SUITESPARSE_INCLUDE_DIRS})
-message("SuiteSparse include dirs: " ${SUITESPARSE_INCLUDE_DIRS})
-
 
 # Libigl
 option(LIBIGL_GLFW                "Build target igl::glfw"                OFF)
@@ -277,13 +271,13 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC SOURCE_PATH="${CMAKE_CURRENT_S
 target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIR} ${spectra_SOURCE_DIR}/include/Spectra)
 
 if(MSVC) # AND USE_OpenMP)
-  target_link_libraries(${PROJECT_NAME} igl::core igl_copyleft::comiso polyscope ${SUITESPARSE_LIBRARIES} nlohmann_json::nlohmann_json TinyAD) # stdc++fs
+  target_link_libraries(${PROJECT_NAME} igl::core igl_copyleft::comiso polyscope nlohmann_json::nlohmann_json TinyAD) # stdc++fs
 elseif(APPLE) # AND USE_OpenMP)
-  target_link_libraries(${PROJECT_NAME} igl::core igl_copyleft::comiso polyscope ${SUITESPARSE_LIBRARIES} nlohmann_json::nlohmann_json TinyAD stdc++fs) # nasoq) # c++experimental
+  target_link_libraries(${PROJECT_NAME} igl::core igl_copyleft::comiso polyscope nlohmann_json::nlohmann_json TinyAD stdc++fs) # nasoq) # c++experimental
 elseif(UNIX)
   set(BLA_VENDOR OpenBLAS)
   find_package(BLAS REQUIRED)
-  target_link_libraries(${PROJECT_NAME} igl::core igl_copyleft::comiso polyscope ${SUITESPARSE_LIBRARIES} ${BLAS_LIBRARIES} nlohmann_json::nlohmann_json TinyAD stdc++fs) # nasoq) # c++experimental
+  target_link_libraries(${PROJECT_NAME} igl::core igl_copyleft::comiso polyscope ${BLAS_LIBRARIES} nlohmann_json::nlohmann_json TinyAD stdc++fs) # nasoq) # c++experimental
 endif()
 
 

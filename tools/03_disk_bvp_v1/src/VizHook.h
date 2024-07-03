@@ -27,47 +27,30 @@ public:
 
     virtual void drawGUI()
     {
-	//	ImGui::SliderFloat("k scale", &k_scale, 0.0001f, 2.0f, "k * %.3f");
-	//	ImGui::SliderFloat("dt scale", &dt_scale, 0.0001f, 2.0f, "dt * %.3f");
-		// ImGui::InputFloat("k scale", &k_scale);
-		// ImGui::InputFloat("dt scale", &dt_scale);
-
-    ImGui::InputDouble("Smoothness Weight", &w_smooth);
-    ImGui::InputDouble("S Perp Weight", &w_s_perp);
-    ImGui::InputDouble("Curl Weight", &w_curl);
-    ImGui::InputDouble("Bound Weight", &w_bound);
-
+      ImGui::InputDouble("Smoothness Weight", &w_smooth);
+      ImGui::InputDouble("Bound Weight", &w_bound);
     }
 
     virtual void initSimulation()
     {
 
       // igl::readOBJ(std::string(SOURCE_PATH) + "/../shared/circle.obj", V, F);
-      // igl::readOBJ(std::string(SOURCE_PATH) + "/../shared/circle_1000.obj", V, F);
-      igl::readOBJ(std::string(SOURCE_PATH) + "/../shared/circle_pent_hole2.obj", V, F);
+      igl::readOBJ(std::string(SOURCE_PATH) + "/../shared/circle_1000.obj", V, F);
+      // igl::readOBJ(std::string(SOURCE_PATH) + "/../shared/circle_pent_hole2.obj", V, F);
       // igl::readOBJ(std::string(SOURCE_PATH) + "/../shared/circle_pent_little_hole.obj", V, F);
       
 
 
       cur_surf = Surface(V, F);
 
-
-     
-      // P = tutte_embedding(V, F); 
-
-      // std::cout << "v size " <<  V.size() << " f size " << F.size() << " p size " << P.size() <<std::endl;
-
       cur_iter = 0; 
 
 
       w_bound = 1e3; 
       w_smooth = 1e-5; 
-      w_s_perp = 0;
-      w_curl = 1e5;
  
       polyscope::removeAllStructures();
-      // renderP.resize(P.rows(), 3);
-      // renderP << P, Eigen::MatrixXd::Zero(P.rows(), 1);
+
       renderP = V;
       renderF = F; 
 
@@ -78,18 +61,13 @@ public:
 
       frames = Eigen::MatrixXd::Zero(F.rows(), 2);
 
-      // frames = Eigen::MatrixXd::Random(F.rows(), 2);
 
-
-      // bound_edges.resize(F.rows(),2);
-      // const Eigen::MatrixXi blah = F;
 
       Eigen::MatrixXi bound_edges;
 
       Eigen::MatrixXi K;
 
       igl::on_boundary(F,bound_face_idx, K);
-      // igl::boundary_facets(F, bound_edges, bound_face_idx, K);
 
       int nbf = bound_face_idx.size();
       for(int i = 0; i < nbf; i++)
@@ -112,8 +90,6 @@ public:
             frames.row(i) = Eigen::Vector2d(c(1),-c(0));
           }
 
-          
-          // std::cout << "i" << i << "bound_face_idx(i)" << bound_face_idx(i) << std::endl;
         }
 
       }
@@ -138,11 +114,9 @@ public:
 
       // Add objective term per face. Each connecting 3 vertices.
       func.add_elements<4>(TinyAD::range(F.rows()), [&] (auto& element) -> TINYAD_SCALAR_TYPE(element)
-          {
+      {
           // Evaluate element using either double or TinyAD::Double
           using T = TINYAD_SCALAR_TYPE(element);
-
-
 
           // Get variable 2D vertex positions
           Eigen::Index f_idx = element.handle;
@@ -167,28 +141,11 @@ public:
           Eigen::Vector2<T> c = element.variables(cur_surf.data().faceNeighbors(f_idx, 2));
 
           Eigen::Vector2<T> curr_normalized = curr.normalized();
-          Eigen::Vector2<T> curr_perp; // = curr_normalized;
-          curr_perp(0) = curr_normalized(1);
-          curr_perp(1) = -curr_normalized(0);
-
-          T s_perp_term = pow(a.dot(curr_perp),2) + pow(b.dot(curr_perp),2) + pow(c.dot(curr_perp), 2);
 
           T dirichlet_term = (a + b + c - 3*curr).squaredNorm();
 
-          Eigen::Vector2i ea_idx = cur_surf.data().edgeVerts.row(cur_surf.data().faceEdges(f_idx, 0));
-          Eigen::Vector2i eb_idx = cur_surf.data().edgeVerts.row(cur_surf.data().faceEdges(f_idx, 1));
-          Eigen::Vector2i ec_idx = cur_surf.data().edgeVerts.row(cur_surf.data().faceEdges(f_idx, 2));
-
-          Eigen::Vector2<T> ea = (V.row(ea_idx(0)) - V.row(ea_idx(1))).head<2>();
-          Eigen::Vector2<T> eb = (V.row(eb_idx(0)) - V.row(eb_idx(1))).head<2>();
-          Eigen::Vector2<T> ec = (V.row(ec_idx(0)) - V.row(ec_idx(1))).head<2>();
-
-          T curl_term = pow(a.dot(ea) - curr.dot(ea),2);
-          curl_term +=  pow(b.dot(eb) - curr.dot(eb),2);
-          curl_term +=  pow(c.dot(ec) - curr.dot(ec),2);
-
-          return w_smooth*dirichlet_term + w_curl*curl_term + w_s_perp * s_perp_term;
-          });
+          return w_smooth*dirichlet_term + w_s_perp * s_perp_term;
+      });
 
       // Assemble inital x vector from P matrix.
       // x_from_data(...) takes a lambda function that maps

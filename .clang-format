@@ -1,0 +1,40 @@
+Language: Cpp
+BasedOnStyle: Google
+ColumnLimit: 120
+
+# Force pointers aligned to the type
+DerivePointerAlignment: true
+
+# Align pointer to the left next to the type
+PointerAlignment: Left
+
+# Only sort headers in each include block
+SortIncludes: true
+IncludeBlocks: Preserve
+
+# Indents directives after the hash.
+IndentPPDirectives: AfterHash
+
+# no special treatment for foreach statement.
+ForEachMacros: ['']
+
+# two spaces in front of "//"
+# SpacesBeforeTrailingComments: 2 
+
+# Disable merging short lambdas(one liner for example) fitting on a single line
+AllowShortLambdasOnASingleLine: None
+
+IndentWidth: 4
+
+# spaces, not tabs!
+UseTab: Never
+
+# use \n instead of \r\n
+UseCRLF: false
+
+AlignTrailingComments: true
+SpacesBeforeTrailingComments: 3
+# change the next line to All for Alistair's textbook style
+# AlwaysBreakAfterReturnType: TopLevelDefinitions
+#  #define SHORT_NAME       42
+#  #define LONGER_NAME      0x007f   # does nice spacing for macros

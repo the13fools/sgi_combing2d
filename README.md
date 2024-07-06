@@ -44,33 +44,6 @@ A glfw app should launch displaying an animating Armadillo parametrization.
 _Derived from
 [parametrization_libigl.cc](https://github.com/patr-schm/TinyAD-Examples/blob/main/apps/parametrization_libigl.cc)_
 
-## SUPER ANNOYING DETAIL
-
-install suite sparse and switch out the solver that tiny ad uses like this: 
-
-```
-#pragma once
-
-// #include <Eigen/SparseCholesky>
-#include <Eigen/CholmodSupport>
-
-namespace TinyAD
-{
-
-template <
-        typename PassiveT = double,
-        typename SolverT =  Eigen::CholmodSupernodalLLT< Eigen::SparseMatrix<PassiveT>> >
-struct LinearSolver
-{
-    SolverT solver;
-    bool sparsity_pattern_dirty = true;
-};
-
-}
-
-// Eigen::SimplicialLDLT<Eigen::SparseMatrix<PassiveT>>>
-
-```
 
 ## Ordering
 

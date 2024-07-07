@@ -271,13 +271,13 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC SOURCE_PATH="${CMAKE_CURRENT_S
 target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIR} ${spectra_SOURCE_DIR}/include/Spectra)
 
 if(MSVC) # AND USE_OpenMP)
-  target_link_libraries(${PROJECT_NAME} igl::core igl_copyleft::comiso polyscope nlohmann_json::nlohmann_json TinyAD) # stdc++fs
+  target_link_libraries(${PROJECT_NAME} igl::core polyscope nlohmann_json::nlohmann_json TinyAD) # stdc++fs
 elseif(APPLE) # AND USE_OpenMP)
-  target_link_libraries(${PROJECT_NAME} igl::core igl_copyleft::comiso polyscope nlohmann_json::nlohmann_json TinyAD stdc++fs) # nasoq) # c++experimental
+  target_link_libraries(${PROJECT_NAME} igl::core polyscope nlohmann_json::nlohmann_json TinyAD stdc++fs) # nasoq) # c++experimental
 elseif(UNIX)
   set(BLA_VENDOR OpenBLAS)
   find_package(BLAS REQUIRED)
-  target_link_libraries(${PROJECT_NAME} igl::core igl_copyleft::comiso polyscope ${BLAS_LIBRARIES} nlohmann_json::nlohmann_json TinyAD stdc++fs) # nasoq) # c++experimental
+  target_link_libraries(${PROJECT_NAME} igl::core polyscope ${BLAS_LIBRARIES} nlohmann_json::nlohmann_json TinyAD stdc++fs) # nasoq) # c++experimental
 endif()
 
 
